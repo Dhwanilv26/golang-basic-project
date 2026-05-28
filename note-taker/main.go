@@ -1,15 +1,18 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
+	"os"
+	"strings"
 
 	"example.com/note/note"
 )
 
 func getNoteData() (string, string) {
-	title := getUserInput("note title:")
+	title := getUserInput("note title : ")
 
-	content := getUserInput("note content:")
+	content := getUserInput("note content : ")
 
 	return title, content
 }
@@ -23,16 +26,29 @@ func main() {
 		return
 	}
 
-	fmt.Printf("%+v", userNote)
+	userNote.Display()
+	err = userNote.Save()
+
+	if err != nil {
+		fmt.Println("saving the note failed")
+		return
+	}
+	fmt.Println("saving the note succeded")
 }
 
 func getUserInput(prompt string) string {
-	fmt.Println(prompt)
-	var value string
-	fmt.Scanln(&value)
-	if value == "" {
+	fmt.Print(prompt)
+	reader := bufio.NewReader(os.Stdin)
+
+	text, err := reader.ReadString('\n')
+
+	if err != nil {
 		return ""
 	}
-	return value
+
+	text = strings.TrimSuffix(text, "\n")
+	text = strings.TrimSuffix(text, "\r") // because the text will still contain the \r character which is present in windows
+
+	return text
 
 }
