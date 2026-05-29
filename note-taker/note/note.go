@@ -10,9 +10,9 @@ import (
 )
 
 type Note struct {
-	Title     string
-	Content   string
-	CreatedAt time.Time
+	Title     string    `json:"title"`
+	Content   string    `json:"content"`
+	CreatedAt time.Time `json:"createdAt"`
 }
 
 func New(title, content string) (Note, error) {
@@ -36,7 +36,7 @@ func (note Note) Save() error {
 	if err != nil {
 		return err
 	}
-	return os.WriteFile(fileName, json, 0644)
+	return os.WriteFile(fileName, json, 0644) // content wasnt getting written in the file because the title content and string were private to this package
 
 }
 
