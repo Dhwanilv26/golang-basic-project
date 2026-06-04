@@ -97,3 +97,8 @@ func getUserInput(prompt string) string {
 	return text
 
 }
+
+// we are using T as a generic so the type of a b and result will be determined in runtime only, and we dont have to deal with the value.(type) or value.(int), value.(float64) and all of that mess if we used a long interface code
+func add[T int | float64 | string](a, b T) T {
+	return a + b
+}
