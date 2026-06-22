@@ -8,10 +8,13 @@ import (
 )
 
 type TaxIncludedPriceJob struct {
-	IoManager         filemanager.FileManager // imp: struct ke andar bhi struct define kar sakte
-	TaxRate           float64
-	InputPrices       []float64
-	TaxIncludedPrices map[string]string // input price converted into string, with corresponding output price in string
+	IoManager         filemanager.FileManager `json:"-"` // imp: struct ke andar bhi struct define kar sakte
+	TaxRate           float64                 `json:"tax_rate"`
+	InputPrices       []float64               `json:"input_prices"`
+	TaxIncludedPrices map[string]string       `json:"tax_included_prices"` // input price converted into string, with corresponding output price in string
+
+	// the json backticks here are just struct tags, tell the json package to decode them like these values at runtime, '-' is used to ignore values at runtime
+	// these use the reflect package, use reflect.Get() or reflect.Lookp() methods to manipulate them
 }
 
 // job *TaxJob mtlb job is a pointer of type Taxjob, and (*job).taxrate -> used to deference the pointer value
