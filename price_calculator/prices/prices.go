@@ -8,6 +8,7 @@ import (
 )
 
 type TaxIncludedPriceJob struct {
+	IoManager         filemanager.FileManager // imp: struct ke andar bhi struct define kar sakte
 	TaxRate           float64
 	InputPrices       []float64
 	TaxIncludedPrices map[string]string // input price converted into string, with corresponding output price in string
@@ -17,9 +18,10 @@ type TaxIncludedPriceJob struct {
 
 // address se hi sab modify hota hai ,to inside operations -> use & and return *, this is the std pattern for constructors in Go
 
-func NewTaxIncludedPriceJob(taxRate float64) *TaxIncludedPriceJob {
+func NewTaxIncludedPriceJob(fm *filemanager.FileManager, taxRate float64) *TaxIncludedPriceJob {
 	// pointer stores address of something, so returning the address of something
 	return &TaxIncludedPriceJob{
+		IoManager:   *fm,
 		InputPrices: []float64{10, 20, 30},
 		TaxRate:     taxRate,
 	}
@@ -27,7 +29,7 @@ func NewTaxIncludedPriceJob(taxRate float64) *TaxIncludedPriceJob {
 
 func (job *TaxIncludedPriceJob) LoadData() {
 
-	lines, err := filemanager.ReadLines("prices/prices.txt")
+	lines, err := job.IoManager.ReadLines()
 
 	if err != nil {
 		fmt.Println(err)
@@ -57,5 +59,5 @@ func (job *TaxIncludedPriceJob) Process() {
 
 	job.TaxIncludedPrices = result
 
-	filemanager.WriteJSON(fmt.Sprintf("result_%.0f.json", job.TaxRate*100), job)
+	job.IoManager.WriteJSON(job)
 }
