@@ -30,13 +30,13 @@ func NewTaxIncludedPriceJob(fm *filemanager.FileManager, taxRate float64) *TaxIn
 	}
 }
 
-func (job *TaxIncludedPriceJob) LoadData() {
+func (job *TaxIncludedPriceJob) LoadData() error {
 
 	lines, err := job.IoManager.ReadLines()
 
 	if err != nil {
 		fmt.Println(err)
-		return
+		return err
 	}
 
 	prices, err := conversion.StringsToFloats(lines)
@@ -44,17 +44,20 @@ func (job *TaxIncludedPriceJob) LoadData() {
 	if err != nil {
 		fmt.Println("failed to parse prices in float")
 		fmt.Println(err)
-		return
+		return err
 	}
 
 	job.InputPrices = prices // assigning the prices from the input file to the inputprices field, and ensuring that the job variable is a pointer so that we dont make faaltu copies and save memory
+	return nil
 }
 
-func (job *TaxIncludedPriceJob) Process(doneChan chan bool) {
+func (job *TaxIncludedPriceJob) Process(doneChan chan bool, errorChan chan error) {
+
+	err := job.LoadData()
+	if err != nil {
+		errorChan <- err
+	}
 	result := make(map[string]string)
-
-	job.LoadData()
-
 	for _, price := range (*job).InputPrices {
 		taxIncludedPrice := price * (1 + job.TaxRate)
 		result[fmt.Sprintf("%.2f", price)] = fmt.Sprintf("%0.2f", taxIncludedPrice)
