@@ -50,7 +50,7 @@ func (job *TaxIncludedPriceJob) LoadData() {
 	job.InputPrices = prices // assigning the prices from the input file to the inputprices field, and ensuring that the job variable is a pointer so that we dont make faaltu copies and save memory
 }
 
-func (job *TaxIncludedPriceJob) Process() {
+func (job *TaxIncludedPriceJob) Process(doneChan chan bool) {
 	result := make(map[string]string)
 
 	job.LoadData()
@@ -61,6 +61,6 @@ func (job *TaxIncludedPriceJob) Process() {
 	}
 
 	job.TaxIncludedPrices = result
-
 	job.IoManager.WriteJSON(job)
+	doneChan <- true
 }
